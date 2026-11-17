@@ -14,7 +14,7 @@ class Arvore23 {
         this.root = null;
     }
 
-    // --- INSERÇÃO ---
+    // inserindo(nesse modelo CASO O NUMERO SEJA MAIOR COLOQUEI PRA QUE FOSSE PRA ESQ <-)
     inserir(valor) {
         if (!this.root) {
             this.root = new Node23();
@@ -82,12 +82,12 @@ class Arvore23 {
             return;
         }
 
-        // Se a raiz ficou sem chaves após a remoção (underflow na raiz)
+        // Se a raiz ficou sem chaves após a remoção
         if (this.root.keys.length === 0) {
             if (this.root.isLeaf()) {
-                this.root = null; // A árvore ficou 100% vazia
+                this.root = null; // A árvore ficou vazia
             } else {
-                this.root = this.root.children[0]; // O único filho vira a nova raiz
+                this.root = this.root.children[0]; 
             }
         }
     }
@@ -98,14 +98,14 @@ class Arvore23 {
 
         let encontrou = false;
 
-        // Se encontrou o valor neste nó
+        // Se encontrou o valor neste no
         if (i < no.keys.length && no.keys[i] === valor) {
             encontrou = true;
             if (no.isLeaf()) {
-                // Remoção simples na folha
+                // Folha? entao remove sem burocracias
                 no.keys.splice(i, 1);
             } else {
-                // Substitui pelo predecessor (maior valor da subárvore esquerda)
+                // Substitui pelo predecessor ou sejamaior valor da subarvore esquerda
                 let predNode = no.children[i];
                 while (!predNode.isLeaf()) {
                     predNode = predNode.children[predNode.keys.length];
@@ -113,17 +113,17 @@ class Arvore23 {
                 const predKey = predNode.keys[predNode.keys.length - 1];
                 no.keys[i] = predKey;
                 
-                // Vai deletar a duplicata do predecessor lá embaixo na folha
+                // Vai deletar a duplicata do predecessor
                 this._removerRecursivo(no.children[i], predKey);
                 this._fixUnderflow(no, i); // Verifica se causou underflow
             }
         } else {
-            // Se não encontrou e já chegou na folha, o número não existe
+            // Se nao encontrou e ja chegou na folha o número nao existe
             if (no.isLeaf()) return false;
             
             // Continua descendo para procurar
             encontrou = this._removerRecursivo(no.children[i], valor);
-            this._fixUnderflow(no, i); // Ao subir na recursão, arruma os filhos que ficaram vazios
+            this._fixUnderflow(no, i); 
         }
 
         return encontrou;
@@ -132,13 +132,13 @@ class Arvore23 {
     _fixUnderflow(pai, indexFilho) {
         const filho = pai.children[indexFilho];
         
-        // Se o filho ainda tem uma chave, está tudo certo (sem underflow)
+        // HA uma chave?
         if (filho.keys.length > 0) return; 
 
         const irmaoEsq = indexFilho > 0 ? pai.children[indexFilho - 1] : null;
         const irmaoDir = indexFilho < pai.children.length - 1 ? pai.children[indexFilho + 1] : null;
 
-        // 1. Tenta emprestar do irmão da esquerda
+        ///tentativa de pegar emprestado ESQ
         if (irmaoEsq && irmaoEsq.keys.length > 1) {
             filho.keys.unshift(pai.keys[indexFilho - 1]);
             pai.keys[indexFilho - 1] = irmaoEsq.keys.pop();
@@ -146,7 +146,7 @@ class Arvore23 {
                 filho.children.unshift(irmaoEsq.children.pop());
             }
         }
-        // 2. Tenta emprestar do irmão da direita
+        //tentativa de pegar emprestado DIR
         else if (irmaoDir && irmaoDir.keys.length > 1) {
             filho.keys.push(pai.keys[indexFilho]);
             pai.keys[indexFilho] = irmaoDir.keys.shift();
@@ -154,7 +154,7 @@ class Arvore23 {
                 filho.children.push(irmaoDir.children.shift());
             }
         }
-        // 3. Fusão com o irmão da esquerda
+        // juntando com o da esquerda
         else if (irmaoEsq) {
             irmaoEsq.keys.push(pai.keys[indexFilho - 1]);
             if (!filho.isLeaf()) irmaoEsq.children.push(...filho.children);
@@ -162,7 +162,7 @@ class Arvore23 {
             pai.keys.splice(indexFilho - 1, 1);
             pai.children.splice(indexFilho, 1);
         }
-        // 4. Fusão com o irmão da direita
+        // juntando irmao da direita
         else if (irmaoDir) {
             filho.keys.push(pai.keys[indexFilho]);
             filho.keys.push(...irmaoDir.keys);
@@ -176,7 +176,7 @@ class Arvore23 {
 
 const minhaArvore = new Arvore23();
 
-// --- INTERFACE WEB ---
+
 
 function inserirValor() {
     const input = document.getElementById('valorInput');
